@@ -1,0 +1,55 @@
+Commands:
+
+prompt - execs gpt
+ - prompt list/types
+ - suggest fix
+ - debug
+ - reiterate/retry prompt
+
+verify prompt
+deny prompt
+run
+stop
+
+- Line operations
+select line
+multi-line select
+replace line
+delete line
+insert line
+
+- Simple movement
+move up, down, left, right
+delete up, down, left, right
+
+- Words
+replace word
+search word
+toggle word
+delete word
+
+- Function-specific operations
+delete function [name]
+insert function [name]
+
+- files
+save
+open
+
+abort command
+confirm y/n
+**undo**
+**redo**
+
+*save state
+
+help/manual backdrop
+
+***python gui - boilerplate
+
+templates 
+    - if block
+      for loop
+      while loop
+      class
+      list initializer
