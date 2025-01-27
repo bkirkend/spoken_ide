@@ -1,0 +1,7 @@
+Todo to track action items:
+1. Change speech parsing to acknowledge and react to command words
+    (current behavior is waiting until full sentence is received)
+2. Integrate ide with editing functionality in commands.py
+3. Implement commands.py functions to allow editing of text
+4. Remove "run" button in ide and add preview window with y/n to "publish" to the ide
+
