@@ -16,6 +16,12 @@ def gpt(request):
     discourse.append({"role": "assistant", "content": reply})
     return reply
 
+def clear_discourse():
+    global discourse
+    discourse = [{"role": "system",
+                  "content":
+                  "You are a python-programming ide that only outputs valid python code based on user requests, nothing except code should be printed and no examples or markdown should be output, specifically ```python and ```"}]
+
 
 def __main__():
     print(gpt("create a fibonacci function"))
