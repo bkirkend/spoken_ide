@@ -1,10 +1,6 @@
-import os
 import openai
-import time
 import keys
 
-done = False
-written = True
 client = openai.AzureOpenAI(azure_endpoint=keys.azure_openai_endpoint,
                             api_key=keys.azure_openai_key,
                             api_version=keys.azure_openai_api_version)
@@ -20,7 +16,9 @@ def gpt(request):
     discourse.append({"role": "assistant", "content": reply})
     return reply
 
-print(gpt("create a fibonacci function"))
-while(1):
-    print(gpt(input()))
+
+def __main__():
+    print(gpt("create a fibonacci function"))
+    while(1):
+        print(gpt(input()))
 
