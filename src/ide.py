@@ -2,13 +2,20 @@
 
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, QLabel, QVBoxLayout, QHBoxLayout, QWidget, QSizePolicy
+from PyQt5.QtCore import pyqtSignal, QObject
 from io import StringIO
 import contextlib
 
 class PythonIDE(QMainWindow):
+    preview_signal = pyqtSignal(str)
+    code_editor_signal = pyqtSignal(str)
+
+
     def __init__(self):
         super(PythonIDE, self).__init__()
         self.initUI()
+        self.preview_signal.connect(self.update_preview)
+        self.code_editor_signal.connect(self.update_code_editor)
 
     def initUI(self):
         self.setWindowTitle('Python IDE')
@@ -21,7 +28,7 @@ class PythonIDE(QMainWindow):
         # Main vertical layout (Overall structure)
         main_layout = QVBoxLayout()
 
-        # 🔹 Top Layout for Code Editor & Preview Window
+        # Top Layout for Code Editor & Preview Window
         top_layout = QHBoxLayout()
 
         # Code Editor Section
@@ -31,7 +38,7 @@ class PythonIDE(QMainWindow):
         editor_layout = QVBoxLayout()
         editor_layout.addWidget(self.text_editor_label)
         editor_layout.addWidget(self.text_editor)
-        top_layout.addLayout(editor_layout, 3)  # 🔹 Assign more space (Stretch Factor: 3)
+        top_layout.addLayout(editor_layout, 3)  # Assign more space (Stretch Factor: 3)
 
         # Preview Window Section
         self.preview_window_label = QLabel('Preview Window:', self)
@@ -41,12 +48,12 @@ class PythonIDE(QMainWindow):
         preview_layout = QVBoxLayout()
         preview_layout.addWidget(self.preview_window_label)
         preview_layout.addWidget(self.preview_window)
-        top_layout.addLayout(preview_layout, 3)  # 🔹 Assign more space (Stretch Factor: 3)
+        top_layout.addLayout(preview_layout, 3)  # Assign more space (Stretch Factor: 3)
 
         # Add the top layout (Code Editor & Preview) to the main layout
-        main_layout.addLayout(top_layout, 5)  # 🔹 More space for code & preview (Stretch Factor: 5)
+        main_layout.addLayout(top_layout, 5)  # More space for code & preview (Stretch Factor: 5)
 
-        # 🔹 Bottom Layout for Output Window & Run Button
+        # Bottom Layout for Output Window & Run Button
         bottom_layout = QVBoxLayout()
         self.output_widget_label = QLabel('Output:', self)
         self.output_widget = QTextEdit(self)
@@ -66,6 +73,16 @@ class PythonIDE(QMainWindow):
 
         # Set the main vertical layout to the central widget
         central_widget.setLayout(main_layout)
+
+    def update_preview(self, text=None):
+        if text is None:  # If no argument is passed, use the text from the editor
+            text = self.text_editor.toPlainText()
+        self.preview_window.setPlainText(text)
+
+    def update_code_editor(self, text=None):
+        if text is None:
+            text = self.text_editor.toPlainText()
+        self.text_editor.setPlainText(text)
 
     def run_code(self):
         code = self.text_editor.toPlainText()

@@ -10,6 +10,8 @@ import azure.cognitiveservices.speech as speechsdk
 import threading
 import time
 import keys
+from commands import command_handler
+from PyQt5.QtCore import QMetaObject, Qt
 
 listen = True
 speech_recognizer = None
@@ -30,7 +32,7 @@ def handle_intermediate_result(evt):
     global beginning_of_silence
     beginning_of_silence = time.time()
 
-def speech_recognition_thread_function(name):
+def speech_recognition_thread_function(ide):
     global speech_recognizer, utterance_fragments, beginning_of_silence
     global error_in_s2t_session, stop_speech_recognition
     while not stop_speech_recognition:
@@ -38,7 +40,7 @@ def speech_recognition_thread_function(name):
         while listen and not stop_speech_recognition:
             time.sleep(reconnect_time)
             try:
-                if speech_recognizer==None:
+                if speech_recognizer == None:
                     speech_config = speechsdk.SpeechConfig(
                         subscription=keys.azure_key,
                         region=keys.azure_region)
@@ -48,25 +50,21 @@ def speech_recognition_thread_function(name):
                         speech_config=speech_config, audio_config=audio_config)
                     speech_recognizer.recognized.connect(handle_final_result)
                     speech_recognizer.canceled.connect(handle_error)
-                    speech_recognizer.recognizing.connect(
-                        handle_intermediate_result)
+                    speech_recognizer.recognizing.connect(handle_intermediate_result)
                 utterance_fragments = []
                 beginning_of_silence = time.time()
-                speech_recognizer.start_continuous_recognition()
+                speech_recognizer.start_continuous_recognition_async()
                 while (listen and
                        not error_in_s2t_session and
                        not stop_speech_recognition):
                     now = time.time()
-                    if len(utterance_fragments)>0:
-                        sanitized_utterance = ""
-                        for c in " ".join(utterance_fragments).strip():
-                            if 0<=ord(c)<=127:
-                                sanitized_utterance += c
-                        if sanitized_utterance=="":
+                    if len(utterance_fragments) > 0:
+                        sanitized_utterance = "".join(utterance_fragments).strip()
+                        if sanitized_utterance == "":
                             time.sleep(0.1)
                             continue
                         utterance_fragments = []
-                        process_utterance(sanitized_utterance)
+                        process_utterance(sanitized_utterance, ide)  # Update preview
                     time.sleep(0.1)
                 speech_recognizer.stop_continuous_recognition_async()
                 error_in_s2t_session = False
@@ -77,10 +75,10 @@ def speech_recognition_thread_function(name):
             time.sleep(0.1)
     stop_speech_recognition = False
 
-def start():
+def start(ide):
     global speech_recognition_thread
     speech_recognition_thread  = threading.Thread(
-        target = speech_recognition_thread_function, args = (None,))
+        target = speech_recognition_thread_function, args = (ide,))
     speech_recognition_thread.start()
 
 def stop():
@@ -88,10 +86,24 @@ def stop():
     stop_speech_recognition = True
     speech_recognition_thread.join()
 
-def process_utterance(utterance):
+def extract_command(utterance):
+    words = utterance.strip().split()
+    if not words:
+        return "", ""
+    first, rest = words[0], ' '.join(words[1:])
+    return first, rest
+
+
+def process_utterance(utterance, ide):
     global done
     utterance = utterance.lower()
     print(utterance)
+    command, rest = extract_command(utterance)
+
+    # Emit the signal to safely update the UI in the main thread
+    ide.preview_signal.emit(utterance)
+    ide.code_editor_signal.emit(utterance)
+
     if "bye" in utterance:
         done = True
 
