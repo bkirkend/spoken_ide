@@ -41,6 +41,9 @@ def handle_confirm(msg, ide):
     print("in confirm handler")
     ide.sync_window_signal.emit()
 
+def handle_run(msg, ide):
+   ide.run_code_signal.emit() 
+
 #dictionary mapping commands to function handlers
 command_handler = {
     "prompt" : handle_prompt,
@@ -53,6 +56,7 @@ command_handler = {
     "left" :  handle_left,
     "save" : handle_save,
     "confirm" : handle_confirm,
+    "run" : handle_run
 }
 
 def __main__():

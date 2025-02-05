@@ -10,6 +10,7 @@ class PythonIDE(QMainWindow):
     preview_signal = pyqtSignal(str)
     code_editor_signal = pyqtSignal(str)
     sync_window_signal = pyqtSignal()
+    run_code_signal = pyqtSignal()
 
     def __init__(self):
         super(PythonIDE, self).__init__()
@@ -17,6 +18,7 @@ class PythonIDE(QMainWindow):
         self.preview_signal.connect(self.update_preview)
         self.code_editor_signal.connect(self.update_code_editor)
         self.sync_window_signal.connect(self.sync_editor)
+        self.run_code_signal.connect(self.run_code)
 
     def initUI(self):
         self.setWindowTitle('Python IDE')
