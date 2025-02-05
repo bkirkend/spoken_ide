@@ -10,6 +10,7 @@ import azure.cognitiveservices.speech as speechsdk
 import threading
 import time
 import keys
+import re
 from commands import command_handler
 from PyQt5.QtCore import QMetaObject, Qt
 
@@ -87,22 +88,29 @@ def stop():
     speech_recognition_thread.join()
 
 def extract_command(utterance):
-    words = utterance.strip().split()
+    # Remove punctuation using regular expressions
+    utterance = re.sub(r'[^\w\s]', '', utterance)
+    
+    words = utterance.lower().strip().split()
     if not words:
         return "", ""
     first, rest = words[0], ' '.join(words[1:])
     return first, rest
-
 
 def process_utterance(utterance, ide):
     global done
     utterance = utterance.lower()
     print(utterance)
     command, rest = extract_command(utterance)
-
+    print(f"command: {command}")
+    print(f"rest: {rest}")
     # Emit the signal to safely update the UI in the main thread
-    ide.preview_signal.emit(utterance)
-    ide.code_editor_signal.emit(utterance)
+    # ide.code_editor_signal.emit(utterance)
+    
+    if command in command_handler:
+        command_handler[command](rest, ide)
+    else:
+        print("unrecognized command")
 
     if "bye" in utterance:
         done = True

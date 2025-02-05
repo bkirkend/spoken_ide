@@ -9,13 +9,14 @@ import contextlib
 class PythonIDE(QMainWindow):
     preview_signal = pyqtSignal(str)
     code_editor_signal = pyqtSignal(str)
-
+    sync_window_signal = pyqtSignal()
 
     def __init__(self):
         super(PythonIDE, self).__init__()
         self.initUI()
         self.preview_signal.connect(self.update_preview)
         self.code_editor_signal.connect(self.update_code_editor)
+        self.sync_window_signal.connect(self.sync_editor)
 
     def initUI(self):
         self.setWindowTitle('Python IDE')
@@ -82,6 +83,10 @@ class PythonIDE(QMainWindow):
     def update_code_editor(self, text=None):
         if text is None:
             text = self.text_editor.toPlainText()
+        self.text_editor.setPlainText(text)
+
+    def sync_editor(self):
+        text = self.preview_window.toPlainText()
         self.text_editor.setPlainText(text)
 
     def run_code(self):
