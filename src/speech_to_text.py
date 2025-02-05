@@ -88,14 +88,14 @@ def stop():
     stop_speech_recognition = True
     speech_recognition_thread.join()
 
-if __name__=="__main__":
-    def process_utterance(utterance):
-        global done
-        utterance = utterance.lower()
-        print(utterance)
-        if "bye" in utterance:
-            done = True
+def process_utterance(utterance):
+    global done
+    utterance = utterance.lower()
+    print(utterance)
+    if "bye" in utterance:
+        done = True
 
+if __name__=="__main__":
     start()
     while not done:
         time.sleep(1)
