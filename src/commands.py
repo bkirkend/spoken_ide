@@ -2,8 +2,6 @@
 
 from gpt import *
 
-save_text = None
-
 def handle_prompt(msg, ide):
     print("in prompt handler")
     output = gpt(msg)
@@ -34,11 +32,24 @@ def handle_right(msg, ide):
     pass
 
 def handle_save(msg, ide):
-    global save_text
-    save_text = ide.preview_signal.toPlainText()
+    try:
+        content = ide.text_editor.toPlainText()
+        with open("txt/ide.txt", "w") as f:
+            print(f"Saving content: {content}")  # Verify content to save
+            f.write(content)
+    except Exception as e:
+        print(f"Error saving file: {e}")
 
 def handle_load(msg, ide):
-    ide.preview_signal.emit(save_text)
+    try:
+        with open("txt/ide.txt", "r") as f:
+            saved_text = f.read()
+            print(f"Loaded text: {saved_text}")  # Verify loaded text
+            ide.preview_signal.emit(saved_text)
+    except FileNotFoundError:
+        print("File not found. Nothing to load.")
+    except Exception as e:
+        print(f"Error loading file: {e}")
 
 def handle_confirm(msg, ide):
     print("in confirm handler")
