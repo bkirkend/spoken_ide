@@ -208,7 +208,7 @@ class PythonIDE(QMainWindow):
 
         with contextlib.redirect_stdout(output_stream):
             try:
-                exec(code)
+                exec(code, sys.modules)
             except Exception as e:
                 print(e)
 
