@@ -1,10 +1,132 @@
-#adopted from geeksforgeeks and modified through chatgpt to create gui window
-
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, QLabel, QVBoxLayout, QHBoxLayout, QWidget, QSizePolicy
-from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, QLabel, QVBoxLayout, QHBoxLayout, QWidget, QSizePolicy, QPlainTextEdit
+from PyQt5.QtCore import pyqtSignal, Qt, QRect
+from PyQt5.QtGui import QPainter, QTextFormat
 from io import StringIO
 import contextlib
+
+
+class LineNumberArea(QWidget):
+    def __init__(self, editor):
+        super().__init__(editor)
+        self.editor = editor
+
+    def sizeHint(self):
+        return self.editor.line_number_area_size()
+
+    def paintEvent(self, event):
+        self.editor.line_number_area_paint(event)
+
+
+class CodeEditor(QPlainTextEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.line_number_area = LineNumberArea(self)
+
+        self.blockCountChanged.connect(self.update_line_number_area_width)
+        self.updateRequest.connect(self.update_line_number_area)
+
+        self.update_line_number_area_width()
+
+    def line_number_area_width(self):
+        digits = len(str(max(1, self.blockCount())))
+        return 10 + self.fontMetrics().horizontalAdvance('9') * digits
+
+    def line_number_area_size(self):
+        return self.line_number_area_width(), 0
+
+    def update_line_number_area_width(self):
+        self.setViewportMargins(self.line_number_area_width(), 0, 0, 0)
+
+    def update_line_number_area(self, rect, dy):
+        if dy:
+            self.line_number_area.scroll(0, dy)
+        else:
+            self.line_number_area.update(0, rect.y(), self.line_number_area.width(), rect.height())
+
+        if rect.contains(self.viewport().rect()):
+            self.update_line_number_area_width()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        cr = self.contentsRect()
+        self.line_number_area.setGeometry(QRect(cr.left(), cr.top(), self.line_number_area_width(), cr.height()))
+
+    def line_number_area_paint(self, event):
+        painter = QPainter(self.line_number_area)
+        painter.fillRect(event.rect(), Qt.lightGray)
+
+        block = self.firstVisibleBlock()
+        block_number = block.blockNumber()
+        top = self.blockBoundingGeometry(block).translated(self.contentOffset()).top()
+        bottom = top + self.blockBoundingRect(block).height()
+
+        while block.isValid() and top <= event.rect().bottom():
+            if block.isVisible() and bottom >= event.rect().top():
+                number = str(block_number + 1)
+                painter.drawText(0, int(top), self.line_number_area.width() - 5, int(self.fontMetrics().height()),
+                                 Qt.AlignRight, number)
+
+            block = block.next()
+            top = bottom
+            bottom = top + self.blockBoundingRect(block).height()
+            block_number += 1
+
+
+class PreviewWindow(QPlainTextEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.line_number_area = LineNumberArea(self)
+
+        self.blockCountChanged.connect(self.update_line_number_area_width)
+        self.updateRequest.connect(self.update_line_number_area)
+
+        self.update_line_number_area_width()
+
+    def line_number_area_width(self):
+        digits = len(str(max(1, self.blockCount())))
+        return 10 + self.fontMetrics().horizontalAdvance('9') * digits
+
+    def line_number_area_size(self):
+        return self.line_number_area_width(), 0
+
+    def update_line_number_area_width(self):
+        self.setViewportMargins(self.line_number_area_width(), 0, 0, 0)
+
+    def update_line_number_area(self, rect, dy):
+        if dy:
+            self.line_number_area.scroll(0, dy)
+        else:
+            self.line_number_area.update(0, rect.y(), self.line_number_area.width(), rect.height())
+
+        if rect.contains(self.viewport().rect()):
+            self.update_line_number_area_width()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        cr = self.contentsRect()
+        self.line_number_area.setGeometry(QRect(cr.left(), cr.top(), self.line_number_area_width(), cr.height()))
+
+    def line_number_area_paint(self, event):
+        painter = QPainter(self.line_number_area)
+        painter.fillRect(event.rect(), Qt.lightGray)
+
+        block = self.firstVisibleBlock()
+        block_number = block.blockNumber()
+        top = self.blockBoundingGeometry(block).translated(self.contentOffset()).top()
+        bottom = top + self.blockBoundingRect(block).height()
+
+        while block.isValid() and top <= event.rect().bottom():
+            if block.isVisible() and bottom >= event.rect().top():
+                number = str(block_number + 1)
+                painter.drawText(0, int(top), self.line_number_area.width() - 5, int(self.fontMetrics().height()),
+                                 Qt.AlignRight, number)
+
+            block = block.next()
+            top = bottom
+            bottom = top + self.blockBoundingRect(block).height()
+            block_number += 1
+
 
 class PythonIDE(QMainWindow):
     preview_signal = pyqtSignal(str)
@@ -24,61 +146,50 @@ class PythonIDE(QMainWindow):
         self.setWindowTitle('Python IDE')
         self.setGeometry(100, 100, 800, 600)
 
-        # Main central widget
         central_widget = QWidget(self)
         self.setCentralWidget(central_widget)
 
-        # Main vertical layout (Overall structure)
         main_layout = QVBoxLayout()
 
-        # Top Layout for Code Editor & Preview Window
         top_layout = QHBoxLayout()
 
-        # Code Editor Section
+        # Code Editor with Line Numbers
         self.text_editor_label = QLabel('Code Editor:', self)
-        self.text_editor = QTextEdit(self)
-        self.text_editor.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # Allow expansion
+        self.text_editor = CodeEditor(self)
+        self.text_editor.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         editor_layout = QVBoxLayout()
         editor_layout.addWidget(self.text_editor_label)
         editor_layout.addWidget(self.text_editor)
-        top_layout.addLayout(editor_layout, 3)  # Assign more space (Stretch Factor: 3)
+        top_layout.addLayout(editor_layout, 3)
 
-        # Preview Window Section
+        # Preview Window with Line Numbers
         self.preview_window_label = QLabel('Preview Window:', self)
-        self.preview_window = QTextEdit(self)
+        self.preview_window = PreviewWindow(self)
         self.preview_window.setReadOnly(True)
         self.preview_window.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         preview_layout = QVBoxLayout()
         preview_layout.addWidget(self.preview_window_label)
         preview_layout.addWidget(self.preview_window)
-        top_layout.addLayout(preview_layout, 3)  # Assign more space (Stretch Factor: 3)
+        top_layout.addLayout(preview_layout, 3)
 
-        # Add the top layout (Code Editor & Preview) to the main layout
-        main_layout.addLayout(top_layout, 5)  # More space for code & preview (Stretch Factor: 5)
+        main_layout.addLayout(top_layout, 5)
 
-        # Bottom Layout for Output Window & Run Button
         bottom_layout = QVBoxLayout()
         self.output_widget_label = QLabel('Output:', self)
         self.output_widget = QTextEdit(self)
         self.output_widget.setReadOnly(True)
-        self.output_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)  # Limit height
-        self.output_widget.setMinimumHeight(100)  # 🔹 Restrict output size
+        self.output_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.output_widget.setMinimumHeight(100)
         bottom_layout.addWidget(self.output_widget_label)
         bottom_layout.addWidget(self.output_widget)
 
-        # Run Button
-        self.run_button = QPushButton('Run', self)
-        self.run_button.clicked.connect(self.run_code)
-        bottom_layout.addWidget(self.run_button)
 
-        # Add bottom layout (Output & Run) to main layout
-        main_layout.addLayout(bottom_layout, 1)  # 🔹 Less space for Output (Stretch Factor: 1)
+        main_layout.addLayout(bottom_layout, 1)
 
-        # Set the main vertical layout to the central widget
         central_widget.setLayout(main_layout)
 
     def update_preview(self, text=None):
-        if text is None:  # If no argument is passed, use the text from the editor
+        if text is None:
             text = self.text_editor.toPlainText()
         self.preview_window.setPlainText(text)
 
@@ -94,7 +205,7 @@ class PythonIDE(QMainWindow):
     def run_code(self):
         code = self.text_editor.toPlainText()
         output_stream = StringIO()
-        
+
         with contextlib.redirect_stdout(output_stream):
             try:
                 exec(code)
@@ -103,6 +214,7 @@ class PythonIDE(QMainWindow):
 
         output = output_stream.getvalue()
         self.output_widget.setPlainText(output)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
