@@ -5,7 +5,6 @@
 # https://github.com/Azure-Samples/cognitive-services-speech-sdk/blob/master/quickstart/python/from-microphone
 #
 # Code referenced from: https://github.com/qobi/ece49595nl/blob/main/speech_to_text_microsoft.py
-
 import azure.cognitiveservices.speech as speechsdk
 import threading
 import time
@@ -92,25 +91,46 @@ def extract_command(utterance):
     utterance = re.sub(r'[^\w\s]', '', utterance)
     
     words = utterance.lower().strip().split()
-    if not words:
-        return "", ""
-    first, rest = words[0], ' '.join(words[1:])
+    
+    if not words or "chat" not in words:
+        return "invalid", ""  # If "chat" isn't found, return "invalid"
+    
+    commands = []
+    # Split the utterance into fragments based on the word "chat"
+    fragments = re.split(r'\bchat\b', utterance.lower())
+    
+    for fragment in fragments:
+        if fragment.strip():
+            command, rest = extract_single_command(fragment.strip())
+            commands.append((command, rest))
+    
+    return commands
+
+def extract_single_command(fragment):
+    words = fragment.strip().split()
+    if len(words) > 0:
+        first = words[0]  # The first word after "chat"
+        rest = ' '.join(words[1:])  # The rest of the utterance
+    else:
+        first, rest = "invalid", ""  # If no words follow "chat"
+    
     return first, rest
 
 def process_utterance(utterance, ide):
     global done
     utterance = utterance.lower()
     print(utterance)
-    command, rest = extract_command(utterance)
-    print(f"command: {command}")
-    print(f"rest: {rest}")
-    # Emit the signal to safely update the UI in the main thread
-    # ide.code_editor_signal.emit(utterance)
     
-    if command in command_handler:
-        command_handler[command](rest, ide)
-    else:
-        print("unrecognized command")
+    commands = extract_command(utterance)
+    
+    for command, rest in commands:
+        print(f"command: {command}")
+        print(f"rest: {rest}")
+        
+        if command in command_handler:
+            command_handler[command](rest, ide)
+        else:
+            print("unrecognized command")
 
     if "bye" in utterance:
         done = True
@@ -120,5 +140,3 @@ if __name__=="__main__":
     while not done:
         time.sleep(1)
     stop()
-
-

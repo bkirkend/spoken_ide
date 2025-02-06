@@ -157,6 +157,7 @@ class PythonIDE(QMainWindow):
         self.text_editor_label = QLabel('Code Editor:', self)
         self.text_editor = CodeEditor(self)
         self.text_editor.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.text_editor.setReadOnly(True)
         editor_layout = QVBoxLayout()
         editor_layout.addWidget(self.text_editor_label)
         editor_layout.addWidget(self.text_editor)
@@ -182,7 +183,6 @@ class PythonIDE(QMainWindow):
         self.output_widget.setMinimumHeight(100)
         bottom_layout.addWidget(self.output_widget_label)
         bottom_layout.addWidget(self.output_widget)
-
 
         main_layout.addLayout(bottom_layout, 1)
 

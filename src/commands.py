@@ -2,25 +2,24 @@
 
 from gpt import *
 
-def parse_command(msg, ide):
-    pass
+save_text = None
 
 def handle_prompt(msg, ide):
     print("in prompt handler")
     output = gpt(msg)
     ide.preview_signal.emit(output)
-    return output
 
-def handle_line(msg, line_num, ide):
-    suffix = f"only change line {line_num}"
+def handle_literal(msg, ide):
+    #literal interpretation to type function
+    pass
+
+def handle_line(msg, ide):
+    suffix = f"only change the line specified leave everything else the same"
     print(output := gpt(msg + suffix))
-    return output
+    ide.preview_signal.emit(output)
 
 def handle_clear_history(msg, ide):
     clear_discourse()
-
-def handle_run(msg, ide):
-    pass
 
 def handle_up(msg, ide):
     pass
@@ -35,7 +34,11 @@ def handle_right(msg, ide):
     pass
 
 def handle_save(msg, ide):
-    pass
+    global save_text
+    save_text = ide.preview_signal.toPlainText()
+
+def handle_load(msg, ide):
+    ide.preview_signal.emit(save_text)
 
 def handle_confirm(msg, ide):
     print("in confirm handler")
@@ -47,6 +50,7 @@ def handle_run(msg, ide):
 #dictionary mapping commands to function handlers
 command_handler = {
     "prompt" : handle_prompt,
+    "literal" : handle_literal,
     "line" : handle_line,
     "run" : handle_run,
     "clear history" : handle_clear_history,
@@ -55,6 +59,7 @@ command_handler = {
     "right" :  handle_right,
     "left" :  handle_left,
     "save" : handle_save,
+    "load" : handle_load,
     "confirm" : handle_confirm,
     "run" : handle_run
 }
