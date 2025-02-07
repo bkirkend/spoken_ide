@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, QLabel, QVBoxLayout, QHBoxLayout, QWidget, QSizePolicy, QPlainTextEdit
-from PyQt5.QtCore import pyqtSignal, Qt, QRect
-from PyQt5.QtGui import QPainter, QTextFormat
+from PyQt5.QtCore import pyqtSignal, Qt, QRect, QTimer
+from PyQt5.QtGui import QPainter, QTextFormat, QTextCursor, QPen
 from io import StringIO
 import contextlib
 
@@ -82,6 +82,68 @@ class PreviewWindow(QPlainTextEdit):
         self.updateRequest.connect(self.update_line_number_area)
 
         self.update_line_number_area_width()
+        self.cursor_timer = QTimer(self)
+        self.cursor_timer.timeout.connect(self.blink_cursor)
+        self.cursor_visible = True
+        self.cursor_timer.start(500)  
+
+        self.setCursorWidth(2)  # Sets cursor width for visibility
+        self.setFocusPolicy(Qt.StrongFocus)  # Allows keyboard focus
+        self.setTextInteractionFlags(Qt.TextEditorInteraction)
+        self.cursor_position = self.textCursor()  # Track cursor position
+
+    def move_cursor(self, direction):
+        """Move the cursor in the specified direction while keeping it visible."""
+        cursor = self.textCursor()  # Get the current cursor position
+
+        if direction == "up":
+            cursor.movePosition(QTextCursor.Up, QTextCursor.MoveAnchor)  # Move up a whole line
+        elif direction == "down":
+            cursor.movePosition(QTextCursor.Down, QTextCursor.MoveAnchor)  # Move down a whole line
+        elif direction == "left":
+            cursor.movePosition(QTextCursor.StartOfBlock, QTextCursor.KeepAnchor)  # Move left by word
+        elif direction == "right":
+            cursor.movePosition(QTextCursor.EndOfBlock, QTextCursor.KeepAnchor)  # Move right by word
+
+        # Ensure cursor stays within bounds
+        if not cursor.isNull():
+            self.setTextCursor(cursor)  # Apply the updated cursor position
+            self.ensureCursorVisible()  # Keep the cursor in view
+            self.setFocus()  # Ensure the preview window is focused
+            self.viewport().update()  # Force UI repaint
+
+        # Debugging: Check the cursor position
+        print(f"Cursor moved {direction}, new position: {cursor.blockNumber()} (line {cursor.positionInBlock()})")
+
+
+    def update_cursor_position(self, position=None): 
+        """Moves the cursor to the given position or to the end of the text."""
+        if position is None:
+            self.cursor_position.movePosition(QTextCursor.End)
+        else:
+            self.cursor_position.setPosition(position)
+        
+        self.setTextCursor(self.cursor_position)  # Apply the new cursor position
+        self.ensureCursorVisible()  # Make sure cursor stays in view
+        self.viewport().update()  # Force UI repaint
+
+    def blink_cursor(self): #blinks 
+        self.cursor_visible = not self.cursor_visible
+        self.viewport().update()
+
+    def paintEvent(self, event):
+        super().paintEvent(event)
+        if self.cursor_visible:
+            painter = QPainter(self.viewport())
+            pen = QPen(Qt.black, 2)  
+            painter.setPen(pen)
+
+            rect = self.cursorRect(self.cursor_position)
+            painter.drawLine(rect.left(), rect.top(), rect.left(), rect.bottom())
+
+    def setPlainText(self, text):
+        super().setPlainText(text)
+        self.update_cursor_position()
 
     def line_number_area_width(self):
         digits = len(str(max(1, self.blockCount())))

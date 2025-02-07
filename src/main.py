@@ -1,8 +1,8 @@
 import threading
-from commands import *
-from ide import *
-from speech_to_text import *
-from gpt import *
+from src.commands import *
+from src.ide import *
+from src.speech_to_text import *
+from src.gpt import *
 
 ide = None
 

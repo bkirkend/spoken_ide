@@ -8,9 +8,9 @@
 import azure.cognitiveservices.speech as speechsdk
 import threading
 import time
-import keys
+import src.keys as keys
 import re
-from commands import command_handler
+from src.commands import command_handler
 from PyQt5.QtCore import QMetaObject, Qt
 
 listen = True

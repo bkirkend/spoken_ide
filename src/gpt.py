@@ -1,5 +1,5 @@
 import openai
-import keys
+import src.keys as keys
 
 client = openai.AzureOpenAI(azure_endpoint=keys.azure_openai_endpoint,
                             api_key=keys.azure_openai_key,

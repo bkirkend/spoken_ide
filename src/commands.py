@@ -1,6 +1,6 @@
 #command parser based on spoken input
-
-from gpt import *
+from src.gpt import *
+from PyQt5.QtGui import QTextCursor
 
 def handle_prompt(msg, ide):
     print("in prompt handler")
@@ -9,7 +9,8 @@ def handle_prompt(msg, ide):
 
 def handle_literal(msg, ide):
     #literal interpretation to type function
-    pass
+    print(f"Literal Text: {msg}", flush=True)
+    ide.preview_signal.emit(ide.preview_window.toPlainText() + " " + msg + " ") 
 
 def handle_line(msg, ide):
     suffix = f"only change the line specified leave everything else the same"
@@ -20,7 +21,9 @@ def handle_clear_history(msg, ide):
     clear_discourse()
 
 def handle_up(msg, ide):
-    pass
+    print("Moving cursor up")  # Debug print
+    ide.preview_window.setFocus()
+    ide.preview_window.move_cursor("up")
 
 def handle_down(msg, ide):
     pass
@@ -72,7 +75,6 @@ command_handler = {
     "save" : handle_save,
     "load" : handle_load,
     "confirm" : handle_confirm,
-    "run" : handle_run
 }
 
 def __main__():
