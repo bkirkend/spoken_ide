@@ -93,39 +93,35 @@ class PreviewWindow(QPlainTextEdit):
         self.cursor_position = self.textCursor()  # Track cursor position
 
     def move_cursor(self, direction):
-        """Move the cursor in the specified direction while keeping it visible."""
-        cursor = self.textCursor()  # Get the current cursor position
+        cursor = self.textCursor()  
 
         if direction == "up":
-            cursor.movePosition(QTextCursor.Up, QTextCursor.MoveAnchor)  # Move up a whole line
+            cursor.movePosition(QTextCursor.Up, QTextCursor.MoveAnchor) 
         elif direction == "down":
-            cursor.movePosition(QTextCursor.Down, QTextCursor.MoveAnchor)  # Move down a whole line
+            cursor.movePosition(QTextCursor.Down, QTextCursor.MoveAnchor)  
         elif direction == "left":
-            cursor.movePosition(QTextCursor.StartOfBlock, QTextCursor.KeepAnchor)  # Move left by word
+            cursor.movePosition(QTextCursor.StartOfBlock, QTextCursor.KeepAnchor)  
         elif direction == "right":
-            cursor.movePosition(QTextCursor.EndOfBlock, QTextCursor.KeepAnchor)  # Move right by word
+            cursor.movePosition(QTextCursor.EndOfBlock, QTextCursor.KeepAnchor) 
 
-        # Ensure cursor stays within bounds
         if not cursor.isNull():
-            self.setTextCursor(cursor)  # Apply the updated cursor position
-            self.ensureCursorVisible()  # Keep the cursor in view
-            self.setFocus()  # Ensure the preview window is focused
-            self.viewport().update()  # Force UI repaint
+            self.setTextCursor(cursor)  
+            self.ensureCursorVisible()  
+            self.setFocus()  
+            self.viewport().update()  
 
-        # Debugging: Check the cursor position
-        print(f"Cursor moved {direction}, new position: {cursor.blockNumber()} (line {cursor.positionInBlock()})")
+        print(f"new position: {cursor.blockNumber()} (line {cursor.positionInBlock()})")
 
 
     def update_cursor_position(self, position=None): 
-        """Moves the cursor to the given position or to the end of the text."""
         if position is None:
             self.cursor_position.movePosition(QTextCursor.End)
         else:
             self.cursor_position.setPosition(position)
         
-        self.setTextCursor(self.cursor_position)  # Apply the new cursor position
-        self.ensureCursorVisible()  # Make sure cursor stays in view
-        self.viewport().update()  # Force UI repaint
+        self.setTextCursor(self.cursor_position)  
+        self.ensureCursorVisible()  
+        self.viewport().update()  
 
     def blink_cursor(self): #blinks 
         self.cursor_visible = not self.cursor_visible
