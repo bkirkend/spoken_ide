@@ -14,10 +14,10 @@ def run_ide():
     sys.exit(app.exec_())
 
 def run_listener():
-    while ide is None:  # Ensure ide is initialized before starting the listener
-        time.sleep(0.1)  # Wait until ide is ready
+    while ide is None:  
+        time.sleep(0.1) 
 
-    start(ide)  # Pass ide into the listener thread
+    start(ide)
     while not done:
         time.sleep(1)
     stop()

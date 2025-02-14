@@ -1,5 +1,9 @@
-#Resources: 
-#https://doc.qt.io/qt-6/qtextcursor.html 
+'''
+Resources: 
+https://doc.qt.io/qt-6/qtextcursor.html 
+Original source: https://www.geeksforgeeks.org/creating-your-own-python-ide-in-python/?ref=ml_lbp
+Some modifications made with assistance from ChatGPT
+'''
 
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, QLabel, QVBoxLayout, QHBoxLayout, QWidget, QSizePolicy, QPlainTextEdit
@@ -29,6 +33,9 @@ class CodeEditor(QPlainTextEdit):
         self.updateRequest.connect(self.update_line_number_area)
 
         self.update_line_number_area_width()
+
+    def keyPressEvent(self, event):
+        pass
 
     def line_number_area_width(self):
         digits = len(str(max(1, self.blockCount())))
@@ -89,10 +96,13 @@ class PreviewWindow(QPlainTextEdit):
         self.cursor_visible = True
         self.cursor_timer.start(500)  
 
-        self.setCursorWidth(2)  # Sets cursor width for visibility
-        self.setFocusPolicy(Qt.StrongFocus)  # Allows keyboard focus
+        self.setCursorWidth(2)  
+        self.setFocusPolicy(Qt.StrongFocus)  
         self.setTextInteractionFlags(Qt.TextEditorInteraction)
-        self.cursor_position = self.textCursor()  # Track cursor position
+        self.cursor_position = self.textCursor()  
+
+    def keyPressEvent(self, event):
+        pass
 
     def move_cursor(self, direction):
         cursor = self.textCursor()  
@@ -107,14 +117,14 @@ class PreviewWindow(QPlainTextEdit):
         elif direction == "right":
             cursor.movePosition(QTextCursor.Right, QTextCursor.MoveAnchor) 
 
-        #print(f"New cursor position: {cursor.position()}")  # Debug print
+        #print(f"New cursor position: {cursor.position()}")  
         #     elif direction == "left":
         #    cursor.movePosition(QTextCursor.StartOfBlock, QTextCursor.KeepAnchor)
         if not cursor.isNull():
-            self.setTextCursor(cursor)  # Apply the updated cursor
-            self.ensureCursorVisible()  # Ensure the cursor is visible
-            self.setFocus()  # Ensure the widget has focus
-            self.viewport().update()  # Force a repaint
+            self.setTextCursor(cursor)
+            self.ensureCursorVisible()  
+            self.setFocus()  
+            self.viewport().update()  
 
         #cursor.blockNumber() is line number starting at 0 
         #cursor.positionInBlock() is left and right position
@@ -148,15 +158,15 @@ class PreviewWindow(QPlainTextEdit):
         self.ensureCursorVisible()  
         self.viewport().update()  
 
-    def blink_cursor(self): #blinks 
+    def blink_cursor(self): 
         self.cursor_visible = not self.cursor_visible
         self.viewport().update()
 
     def paintEvent(self, event):
-        super().paintEvent(event)  # Call the parent's paintEvent
+        super().paintEvent(event)  
         if self.cursor_visible:
             painter = QPainter(self.viewport())
-            pen = QPen(Qt.black, 2)  # Set cursor color and thickness
+            pen = QPen(Qt.black, 2)  
             painter.setPen(pen)
 
             # Get the cursor rectangle
@@ -262,7 +272,7 @@ class PythonIDE(QMainWindow):
         bottom_layout = QVBoxLayout()
         self.output_widget_label = QLabel('Output:', self)
         self.output_widget = QTextEdit(self)
-        self.output_widget.setReadOnly(False)
+        self.output_widget.setReadOnly(True)
         self.output_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.output_widget.setMinimumHeight(100)
         bottom_layout.addWidget(self.output_widget_label)
@@ -300,8 +310,8 @@ class PythonIDE(QMainWindow):
         self.output_widget.setPlainText(output)
 
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ide = PythonIDE()
-    ide.show()
-    sys.exit(app.exec_())
+# if __name__ == '__main__':
+#     app = QApplication(sys.argv)
+#     ide = PythonIDE()
+#     ide.show()
+#     sys.exit(app.exec_())

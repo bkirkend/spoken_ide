@@ -1,6 +1,7 @@
 #command parser based on spoken input
 from src.gpt import *
 from PyQt5.QtGui import QTextCursor
+import os
 
 def handle_prompt(msg, ide):
     print("in prompt handler")
@@ -21,6 +22,7 @@ def handle_clear_history(msg, ide):
     clear_discourse()
 
 def handle_up(msg, ide):
+<<<<<<< HEAD
     print("Moving cursor up") 
     ide.preview_window.setFocus()  
     ide.preview_window.move_cursor("up")
@@ -35,6 +37,22 @@ def handle_left(msg, ide):
 
 def handle_right(msg, ide):
     ide.preview_window.setFocus() 
+=======
+    print("Moving cursor up")
+    ide.preview_window.setFocus()
+    ide.preview_window.move_cursor("up")
+
+def handle_down(msg, ide):
+    ide.preview_window.setFocus()
+    ide.preview_window.move_cursor("down")
+
+def handle_left(msg, ide):
+    ide.preview_window.setFocus()
+    ide.preview_window.move_cursor("left")
+
+def handle_right(msg, ide):
+    ide.preview_window.setFocus()
+>>>>>>> 70ce4af8e78b4e6d47953d7f5f89f7b8cd7f667d
     ide.preview_window.move_cursor("right")
 
 def select_left(msg, ide):
@@ -47,10 +65,15 @@ def select_right(msg, ide):
 
 def handle_save(msg, ide):
     try:
+        os.makedirs("txt", exist_ok=True)
+        
         content = ide.text_editor.toPlainText()
-        with open("txt/ide.txt", "w") as f:
-            print(f"Saving content: {content}")  # Verify content to save
+        file_path = "txt/ide.txt"
+        
+        with open(file_path, "w") as f:
+            print(f"Saving content: {content}")
             f.write(content)
+    
     except Exception as e:
         print(f"Error saving file: {e}")
 
@@ -58,7 +81,7 @@ def handle_load(msg, ide):
     try:
         with open("txt/ide.txt", "r") as f:
             saved_text = f.read()
-            print(f"Loaded text: {saved_text}")  # Verify loaded text
+            print(f"Loaded text: {saved_text}") 
             ide.preview_signal.emit(saved_text)
     except FileNotFoundError:
         print("File not found. Nothing to load.")
@@ -88,7 +111,11 @@ def handle_revise(msg, ide):
 
 def handle_call(msg, ide):
     curr_code_block = ide.preview_window.toPlainText()
+<<<<<<< HEAD
     msg = f"Append to this codeblock calls to the created function with testcases for the following input (or inputs): {msg}. Previous block: {curr_code_block}"
+=======
+    msg = f"Append to this codeblock calls to the created function with a testcase in a print call for the following string input: {msg}. Do not place this in a __main__ block. Append a new test do not override existing testcases. Previous block: {curr_code_block}"
+>>>>>>> 70ce4af8e78b4e6d47953d7f5f89f7b8cd7f667d
     output = gpt(msg)
     ide.preview_signal.emit(output)
 
@@ -113,6 +140,7 @@ command_handler = {
     "left select" : select_left,
     "right select" : select_right, 
 }
+<<<<<<< HEAD
 
 def __main__():
     msg = "determine if a number is prime"
@@ -121,3 +149,5 @@ def __main__():
 if __name__ == "__main__":
     __main__()
 
+=======
+>>>>>>> 70ce4af8e78b4e6d47953d7f5f89f7b8cd7f667d

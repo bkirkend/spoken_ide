@@ -23,8 +23,11 @@ def clear_discourse():
                   "You are a python-programming ide that only outputs valid python code based on user requests, nothing except code should be printed and no examples or markdown should be output, specifically ```python and ```"}]
 
 
-def __main__():
-    print(gpt("create a fibonacci function"))
-    while(1):
-        print(gpt(input()))
+# def __main__():
+#     print(gpt(input("write a function prompt: ")))
+#     while(1):
+#         print(gpt(input()))
+
+# if __name__ == "__main__":
+#     __main__()
 
