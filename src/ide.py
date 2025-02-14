@@ -94,6 +94,7 @@ class PreviewWindow(QPlainTextEdit):
 
     def move_cursor(self, direction):
         cursor = self.textCursor()  
+        print(f"Current cursor position: {cursor.position()}")  # Debug print
 
         if direction == "up":
             cursor.movePosition(QTextCursor.Up, QTextCursor.MoveAnchor) 
@@ -104,15 +105,15 @@ class PreviewWindow(QPlainTextEdit):
         elif direction == "right":
             cursor.movePosition(QTextCursor.EndOfBlock, QTextCursor.KeepAnchor) 
 
+        print(f"New cursor position: {cursor.position()}")  # Debug print
+
         if not cursor.isNull():
-            self.setTextCursor(cursor)  
-            self.ensureCursorVisible()  
-            self.setFocus()  
-            self.viewport().update()  
+            self.setTextCursor(cursor)  # Apply the updated cursor
+            self.ensureCursorVisible()  # Ensure the cursor is visible
+            self.setFocus()  # Ensure the widget has focus
+            self.viewport().update()  # Force a repaint
 
         print(f"new position: {cursor.blockNumber()} (line {cursor.positionInBlock()})")
-
-
     def update_cursor_position(self, position=None): 
         if position is None:
             self.cursor_position.movePosition(QTextCursor.End)
@@ -128,13 +129,14 @@ class PreviewWindow(QPlainTextEdit):
         self.viewport().update()
 
     def paintEvent(self, event):
-        super().paintEvent(event)
+        super().paintEvent(event)  # Call the parent's paintEvent
         if self.cursor_visible:
             painter = QPainter(self.viewport())
-            pen = QPen(Qt.black, 2)  
+            pen = QPen(Qt.black, 2)  # Set cursor color and thickness
             painter.setPen(pen)
 
-            rect = self.cursorRect(self.cursor_position)
+            # Get the cursor rectangle
+            rect = self.cursorRect(self.textCursor())
             painter.drawLine(rect.left(), rect.top(), rect.left(), rect.bottom())
 
     def setPlainText(self, text):
@@ -215,7 +217,7 @@ class PythonIDE(QMainWindow):
         self.text_editor_label = QLabel('Code Editor:', self)
         self.text_editor = CodeEditor(self)
         self.text_editor.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.text_editor.setReadOnly(True)
+        self.text_editor.setReadOnly(False)
         editor_layout = QVBoxLayout()
         editor_layout.addWidget(self.text_editor_label)
         editor_layout.addWidget(self.text_editor)
@@ -224,7 +226,7 @@ class PythonIDE(QMainWindow):
         # Preview Window with Line Numbers
         self.preview_window_label = QLabel('Preview Window:', self)
         self.preview_window = PreviewWindow(self)
-        self.preview_window.setReadOnly(True)
+        self.preview_window.setReadOnly(False)
         self.preview_window.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         preview_layout = QVBoxLayout()
         preview_layout.addWidget(self.preview_window_label)
@@ -236,7 +238,7 @@ class PythonIDE(QMainWindow):
         bottom_layout = QVBoxLayout()
         self.output_widget_label = QLabel('Output:', self)
         self.output_widget = QTextEdit(self)
-        self.output_widget.setReadOnly(True)
+        self.output_widget.setReadOnly(False)
         self.output_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.output_widget.setMinimumHeight(100)
         bottom_layout.addWidget(self.output_widget_label)

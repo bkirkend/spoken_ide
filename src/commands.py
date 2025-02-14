@@ -22,17 +22,20 @@ def handle_clear_history(msg, ide):
 
 def handle_up(msg, ide):
     print("Moving cursor up")  # Debug print
-    ide.preview_window.setFocus()
+    ide.preview_window.setFocus()  # Ensure focus is set
     ide.preview_window.move_cursor("up")
 
 def handle_down(msg, ide):
-    pass
+    ide.preview_window.setFocus()  # Ensure focus is set
+    ide.preview_window.move_cursor("down")
 
 def handle_left(msg, ide):
-    pass
+    ide.preview_window.setFocus()  # Ensure focus is set
+    ide.preview_window.move_cursor("left")
 
 def handle_right(msg, ide):
-    pass
+    ide.preview_window.setFocus()  # Ensure focus is set
+    ide.preview_window.move_cursor("right")
 
 def handle_save(msg, ide):
     try:
