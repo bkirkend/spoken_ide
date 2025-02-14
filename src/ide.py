@@ -120,9 +120,9 @@ class PreviewWindow(QPlainTextEdit):
 
         if not cursor.isNull():
             self.setTextCursor(cursor)
-            self.ensureCursorVisible()  # Ensure the cursor is visible
-            self.setFocus()  # Ensure the widget has focus
-            self.viewport().update()  # Force a repaint
+            self.ensureCursorVisible()  
+            self.setFocus()  
+            self.viewport().update()  
 
         print(f"new position: {cursor.blockNumber()} (line {cursor.positionInBlock()})")
     def update_cursor_position(self, position=None): 
