@@ -3,7 +3,11 @@ from src.gpt import *
 from PyQt5.QtGui import QTextCursor
 import os
 
+history = ""
+
 def handle_prompt(msg, ide):
+    global history
+    history = ide.preview_window.toPlainText()
     gpt_msg = f"Create a function for {msg}, return only the function and no auxiliary calls or tescases"
     output = gpt(gpt_msg)
     ide.preview_signal.emit(output)
@@ -11,6 +15,8 @@ def handle_prompt(msg, ide):
 def handle_literal(msg, ide):
     #literal interpretation to type function
     print(f"Literal Text: {msg}", flush=True)
+    global history
+    history = ide.preview_window.toPlainText()
     ide.preview_signal.emit(ide.preview_window.toPlainText() + " " + msg + " ") 
 
 def handle_clear_history(msg, ide):
@@ -72,6 +78,8 @@ def handle_load(msg, ide):
         with open("txt/ide.txt", "r") as f:
             saved_text = f.read()
             print(f"Loaded text: {saved_text}") 
+            global history
+            history = ide.preview_window.toPlainText()
             ide.preview_signal.emit(saved_text)
     except FileNotFoundError:
         print("File not found. Nothing to load.")
@@ -87,34 +95,45 @@ def handle_run(msg, ide):
 
 def handle_add(msg, ide):
     #should append to previous code block without changing it majorly
+    global history
     curr_code_block = ide.preview_window.toPlainText()
+    history = curr_code_block
     msg = f"append new code to this code block to {msg} without major modifications to the original. Previous block: {curr_code_block}"
     output = gpt(msg)
     ide.preview_signal.emit(output)
 
 def handle_revise(msg, ide):
     #designed to fix/edit a broken code block to change functionality
+    global history
     curr_code_block = ide.preview_window.toPlainText()
+    history = curr_code_block
     msg = f"Revise this code block to {msg}, modifying the original. Previous block: {curr_code_block}"
     output = gpt(msg)
     ide.preview_signal.emit(output)
 
 def handle_test(msg, ide):
+    global history
     curr_code_block = ide.preview_window.toPlainText()
+    history = curr_code_block
     msg = f"Append to this codeblock calls to the created function with a testcase in a print call for the following string input: {msg}. Do not place this in a __main__ block. Append a new test do not override existing testcases. Previous block: {curr_code_block}"
     output = gpt(msg)
     ide.preview_signal.emit(output)
 
 def handle_line(msg, ide):
+    global history
     cursor_line = line() #gets cursor line number
     cursor_line_text = text() #string of text at cursor line
     codeblock = ide.preview_window.toPlainText()
+    history = codeblock
     gpt_msg = f"Contextually edit {cursor_line_text} found on {cursor_line} from this codeblock: {codeblock}. Change it by {msg}."
     output = gpt(gpt_msg)
     ide.preview_signal.emit(output)
 
 def cancel(msg, ide):
     pass
+
+def handle_undo(msg, ide):
+    ide.preview_signal.emit(history)
 
 
 #dictionary mapping commands to function handlers
@@ -140,6 +159,7 @@ command_handler = {
     "getting" : select_all_left, 
     "grabbing" : select_all_right, 
     "cancel" : cancel, 
+    "undo" : handle_undo
 }
 
 # def __main__():
