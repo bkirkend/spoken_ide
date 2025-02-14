@@ -87,16 +87,16 @@ def stop():
     speech_recognition_thread.join()
 
 def extract_command(utterance):
-    # Remove punctuation using regular expressions
+    # remove punctuation with regex
     utterance = re.sub(r'[^\w\s]', '', utterance)
     
     words = utterance.lower().strip().split()
     
     if not words or "chat" not in words:
-        return "invalid", ""  # If "chat" isn't found, return "invalid"
+        return "invalid", "" 
     
     commands = []
-    # Split the utterance into fragments based on the word "chat"
+    # split into fragments based on the word "chat"
     fragments = re.split(r'\bchat\b', utterance.lower())
     
     for fragment in fragments:
@@ -109,10 +109,10 @@ def extract_command(utterance):
 def extract_single_command(fragment):
     words = fragment.strip().split()
     if len(words) > 0:
-        first = words[0]  # The first word after "chat"
-        rest = ' '.join(words[1:])  # The rest of the utterance
+        first = words[0]  # first word after "chat"
+        rest = ' '.join(words[1:])  # rest of the utterance
     else:
-        first, rest = "invalid", ""  # If no words follow "chat"
+        first, rest = "invalid", ""  # if no words follow "chat"
     
     return first, rest
 
