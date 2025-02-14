@@ -104,7 +104,7 @@ def handle_revise(msg, ide):
     output = gpt(msg)
     ide.preview_signal.emit(output)
 
-def handle_call(msg, ide):
+def handle_test(msg, ide):
     curr_code_block = ide.preview_window.toPlainText()
     msg = f"Append to this codeblock calls to the created function with a testcase in a print call for the following string input: {msg}. Do not place this in a __main__ block. Append a new test do not override existing testcases. Previous block: {curr_code_block}"
     output = gpt(msg)
@@ -115,7 +115,7 @@ def handle_call(msg, ide):
 command_handler = {
     "prompt" : handle_prompt,
     "add" : handle_add,
-    "call" : handle_call,
+    "test" : handle_test,
     "revise" : handle_revise,
     "literal" : handle_literal,
     "line" : handle_line,
@@ -128,6 +128,7 @@ command_handler = {
     "save" : handle_save,
     "load" : handle_load,
     "confirm" : handle_confirm,
+    "submit" : handle_confirm,
     "left select" : select_left,
     "right select" : select_right, 
 }
