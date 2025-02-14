@@ -166,7 +166,7 @@ class PreviewWindow(QPlainTextEdit):
             self.setFocus()  
             self.viewport().update()   
 
-    def update_cursor_position(self, position=None): 
+    def update_cursor_position (self, position=None): 
         if position is None:
             self.cursor_position.movePosition(QTextCursor.End)
         else:

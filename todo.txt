@@ -6,3 +6,6 @@ Todo to track action items:
 4. Remove "run" button in ide and add preview window with y/n to "publish" to the ide
 5. Pull in existing linter/syntax checking tool?
 
+1. Cancel select 
+2.move to end of line 
+3. select a whole line 
