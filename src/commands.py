@@ -136,7 +136,10 @@ def cancel(msg, ide):
     pass
 
 def handle_undo(msg, ide):
+    global history
+    old_history = ide.preview_window.toPlainText()
     ide.preview_signal.emit(history)
+    history = old_history
 
 
 #dictionary mapping commands to function handlers
