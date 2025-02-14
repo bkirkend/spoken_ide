@@ -129,8 +129,8 @@ command_handler = {
     "load" : handle_load,
     "confirm" : handle_confirm,
     "submit" : handle_confirm,
-    "left select" : select_left,
-    "right select" : select_right, 
+    "get" : select_left,
+    "grab" : select_right, 
 }
 
 # def __main__():
