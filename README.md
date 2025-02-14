@@ -19,5 +19,9 @@
 | Save | Saves content in code editor window to local txt file |
 | Load | Loads content from local txt file to preview window |
 | Confirm / Submit | Publishes content from preview window to editor window |
-| Undo | Restores text to previous state from last action, depth is 1 so will toggle if called successively|
+| Get | Select lefts one cursors movement |
+| Grab | Selects right one cursors movement |
+| Getting | Selects everything left of the cursor | 
+| Grabbing | Selects everything right of the cursor |
+| Undo | Restores text to previous state from last action, depth is 1 |
 
