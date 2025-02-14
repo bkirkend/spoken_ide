@@ -113,6 +113,9 @@ def handle_line(msg, ide):
     output = gpt(gpt_msg)
     ide.preview_signal.emit(output)
 
+def cancel(msg, ide):
+    pass
+
 
 #dictionary mapping commands to function handlers
 command_handler = {
@@ -136,6 +139,7 @@ command_handler = {
     "grab" : select_right, 
     "getting" : select_all_left, 
     "grabbing" : select_all_right, 
+    "cancel" : cancel, 
 }
 
 # def __main__():
