@@ -147,6 +147,16 @@ def handle_line(msg, ide):
 def cancel(msg, ide):
     pass
 
+def space(msg, ide):
+    print(f"Literal Text: {msg}", flush=True)
+    global history
+    history = ide.preview_window.toPlainText()
+    cursor = ide.preview_window.textCursor()
+    cursor.insertText(" ")
+    ide.preview_window.setTextCursor(cursor)
+    ide.preview_window.ensureCursorVisible()
+    ide.preview_signal.emit(ide.preview_window.toPlainText()) 
+
 def handle_undo(msg, ide):
     global history
     old_history = ide.preview_window.toPlainText()
@@ -177,7 +187,8 @@ command_handler = {
     "getting" : select_all_left, 
     "grabbing" : select_all_right, 
     "cancel" : cancel, 
-    "undo" : handle_undo
+    "undo" : handle_undo, 
+    "space" : space,
 }
 
 # def __main__():
