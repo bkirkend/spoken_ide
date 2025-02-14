@@ -298,6 +298,7 @@ class PythonIDE(QMainWindow):
         main_layout.addLayout(bottom_layout, 1)
 
         central_widget.setLayout(main_layout)
+        self.preview_window.setFocus()
 
     def update_preview(self, text=None):
         if text is None:

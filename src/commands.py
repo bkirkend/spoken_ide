@@ -115,21 +115,29 @@ def handle_test(msg, ide):
     global history
     curr_code_block = ide.preview_window.toPlainText()
     history = curr_code_block
-    msg = f"Append to this codeblock calls to the created function with a testcase in a print call for the following string input: {msg}. Do not place this in a __main__ block. Append a new test do not override existing testcases. Previous block: {curr_code_block}"
+    msg = f"Append to this codeblock calls to the created function with a testcase in a print call for the following string input: {msg}. Important! Append a new test do not override existing testcases. Do not place this in a __main__ block. Previous block: {curr_code_block}"
     output = gpt(msg)
     ide.preview_signal.emit(output)
 
 def handle_line(msg, ide):
-    print("test")
-    cursor = ide.textCursor()  
-    cursor_line = cursor.blockNumber() + 1
-    cursor.movePosition(QTextCursor.StartOfBlock, QTextCursor.KeepAnchor)
-    cursor_line_text = cursor.selectedText() 
-    print(cursor_line_text)
-    print("test")
+    global history
+    cursor = ide.preview_window.textCursor()
+    line_number = cursor.blockNumber()
+    
     codeblock = ide.preview_window.toPlainText()
-    gpt_msg = f"Contextually edit {cursor_line_text} found on {cursor_line} from this codeblock: {codeblock}. Change it by {msg}."
+    history = codeblock
+    lines = codeblock.split("\n")
+
+    if 0 <= line_number < len(codeblock):
+        cursor_line_text = lines[line_number].strip()
+    else:
+        print("Cursor out of range!")
+        return
+
+    # print(f"cursor text: {cursor_line_text}")
+    gpt_msg = f"Contextually edit '{cursor_line_text}' found on line {line_number + 1} from this codeblock: {codeblock}. Change it by {msg}."
     output = gpt(gpt_msg)
+
     ide.preview_signal.emit(output)
 
 def cancel(msg, ide):
