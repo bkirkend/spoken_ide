@@ -120,11 +120,14 @@ def handle_test(msg, ide):
     ide.preview_signal.emit(output)
 
 def handle_line(msg, ide):
-    global history
-    cursor_line = line() #gets cursor line number
-    cursor_line_text = text() #string of text at cursor line
+    print("test")
+    cursor = ide.textCursor()  
+    cursor_line = cursor.blockNumber() + 1
+    cursor.movePosition(QTextCursor.StartOfBlock, QTextCursor.KeepAnchor)
+    cursor_line_text = cursor.selectedText() 
+    print(cursor_line_text)
+    print("test")
     codeblock = ide.preview_window.toPlainText()
-    history = codeblock
     gpt_msg = f"Contextually edit {cursor_line_text} found on {cursor_line} from this codeblock: {codeblock}. Change it by {msg}."
     output = gpt(gpt_msg)
     ide.preview_signal.emit(output)
