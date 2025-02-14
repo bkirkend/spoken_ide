@@ -61,9 +61,32 @@ def handle_confirm(msg, ide):
 def handle_run(msg, ide):
    ide.run_code_signal.emit() 
 
+def handle_add(msg, ide):
+    #should append to previous code block without changing it majorly
+    curr_code_block = ide.preview_window.toPlainText()
+    msg = f"append new code to this code block to {msg} without major modifications to the original. Previous block: {curr_code_block}"
+    output = gpt(msg)
+    ide.preview_signal.emit(output)
+
+def handle_revise(msg, ide):
+    #designed to fix/edit a broken code block to change functionality
+    curr_code_block = ide.preview_window.toPlainText()
+    msg = f"Revise this code block to {msg}, modifying the original. Previous block: {curr_code_block}"
+    output = gpt(msg)
+    ide.preview_signal.emit(output)
+
+def handle_call(msg, ide):
+    curr_code_block = ide.preview_window.toPlainText()
+    msg = f"Append to this codeblock calls to the created function with testcases for the following input (or inputs): {msg}. Previous block: {curr_code_block}"
+    output = gpt(msg)
+    ide.preview_signal.emit(output)
+
 #dictionary mapping commands to function handlers
 command_handler = {
     "prompt" : handle_prompt,
+    "add" : handle_add,
+    "call" : handle_call,
+    "revise" : handle_revise,
     "literal" : handle_literal,
     "line" : handle_line,
     "run" : handle_run,
