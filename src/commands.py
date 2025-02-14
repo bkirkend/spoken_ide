@@ -3,8 +3,9 @@ from src.gpt import *
 from PyQt5.QtGui import QTextCursor
 
 def handle_prompt(msg, ide):
-    print("in prompt handler")
-    output = gpt(msg)
+    # print("in prompt handler")
+    gpt_msg = f"Create a function for {msg}, return only the function and no auxiliary calls or tescases"
+    output = gpt(gpt_msg)
     ide.preview_signal.emit(output)
 
 def handle_literal(msg, ide):
@@ -78,9 +79,9 @@ def handle_revise(msg, ide):
     output = gpt(msg)
     ide.preview_signal.emit(output)
 
-def handle_call(msg, ide):
+def handle_test(msg, ide):
     curr_code_block = ide.preview_window.toPlainText()
-    msg = f"Append to this codeblock calls to the created function with testcases for the following input (or inputs): {msg}. Previous block: {curr_code_block}"
+    msg = f"Append to this codeblock calls to the created function with a testcase in a print call for the following string input: {msg}. Do not place this in a __main__ block. Previous block: {curr_code_block}"
     output = gpt(msg)
     ide.preview_signal.emit(output)
 
@@ -88,7 +89,7 @@ def handle_call(msg, ide):
 command_handler = {
     "prompt" : handle_prompt,
     "add" : handle_add,
-    "call" : handle_call,
+    "test" : handle_test,
     "revise" : handle_revise,
     "literal" : handle_literal,
     "line" : handle_line,

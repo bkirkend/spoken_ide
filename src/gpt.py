@@ -6,7 +6,7 @@ client = openai.AzureOpenAI(azure_endpoint=keys.azure_openai_endpoint,
                             api_version=keys.azure_openai_api_version)
 discourse = [{"role": "system",
               "content":
-              "You are a python-programming ide that only outputs valid python code based on user requests, nothing except code should be printed and no examples or markdown should be output, specifically ```python and ```"}]
+              "You are a python-programming ide that only outputs valid python code based on user requests, nothing except code should be printed and no examples or markdown should be output, specifically ```python and ```. Your job is to create a single string input string output function. Helper functions are permitted."}]
 
 def gpt(request):
     discourse.append({"role": "user", "content": request})
