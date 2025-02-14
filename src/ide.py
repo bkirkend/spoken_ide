@@ -1,10 +1,12 @@
+#Resources: 
+#https://doc.qt.io/qt-6/qtextcursor.html 
+
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, QLabel, QVBoxLayout, QHBoxLayout, QWidget, QSizePolicy, QPlainTextEdit
 from PyQt5.QtCore import pyqtSignal, Qt, QRect, QTimer
 from PyQt5.QtGui import QPainter, QTextFormat, QTextCursor, QPen
 from io import StringIO
 import contextlib
-
 
 class LineNumberArea(QWidget):
     def __init__(self, editor):
@@ -94,26 +96,48 @@ class PreviewWindow(QPlainTextEdit):
 
     def move_cursor(self, direction):
         cursor = self.textCursor()  
-        print(f"Current cursor position: {cursor.position()}")  # Debug print
+        #print(f"Current cursor position: {cursor.position()}")  # Debug print
 
         if direction == "up":
             cursor.movePosition(QTextCursor.Up, QTextCursor.MoveAnchor) 
         elif direction == "down":
             cursor.movePosition(QTextCursor.Down, QTextCursor.MoveAnchor)  
         elif direction == "left":
-            cursor.movePosition(QTextCursor.StartOfBlock, QTextCursor.KeepAnchor)  
+            cursor.movePosition(QTextCursor.Left, QTextCursor.MoveAnchor)  
         elif direction == "right":
-            cursor.movePosition(QTextCursor.EndOfBlock, QTextCursor.KeepAnchor) 
+            cursor.movePosition(QTextCursor.Right, QTextCursor.MoveAnchor) 
 
-        print(f"New cursor position: {cursor.position()}")  # Debug print
-
+        #print(f"New cursor position: {cursor.position()}")  # Debug print
+        #     elif direction == "left":
+        #    cursor.movePosition(QTextCursor.StartOfBlock, QTextCursor.KeepAnchor)
         if not cursor.isNull():
             self.setTextCursor(cursor)  # Apply the updated cursor
             self.ensureCursorVisible()  # Ensure the cursor is visible
             self.setFocus()  # Ensure the widget has focus
             self.viewport().update()  # Force a repaint
 
+        #cursor.blockNumber() is line number starting at 0 
+        #cursor.positionInBlock() is left and right position
         print(f"new position: {cursor.blockNumber()} (line {cursor.positionInBlock()})")
+    
+    def select_left(self):
+        cursor = self.textCursor()  
+        cursor.movePosition(QTextCursor.Left, QTextCursor.KeepAnchor)
+        if not cursor.isNull():
+            self.setTextCursor(cursor)  
+            self.ensureCursorVisible()  
+            self.setFocus()  
+            self.viewport().update()  
+
+    def select_right(self):
+        cursor = self.textCursor()  
+        cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor)
+        if not cursor.isNull():
+            self.setTextCursor(cursor)  
+            self.ensureCursorVisible()  
+            self.setFocus()  
+            self.viewport().update()  
+
     def update_cursor_position(self, position=None): 
         if position is None:
             self.cursor_position.movePosition(QTextCursor.End)
