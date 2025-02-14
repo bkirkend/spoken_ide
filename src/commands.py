@@ -17,7 +17,11 @@ def handle_literal(msg, ide):
     print(f"Literal Text: {msg}", flush=True)
     global history
     history = ide.preview_window.toPlainText()
-    ide.preview_signal.emit(ide.preview_window.toPlainText() + " " + msg + " ") 
+    cursor = ide.preview_window.textCursor()
+    cursor.insertText(" "+ msg + " ")
+    ide.preview_window.setTextCursor(cursor)
+    ide.preview_window.ensureCursorVisible()
+    ide.preview_signal.emit(ide.preview_window.toPlainText()) 
 
 def handle_clear_history(msg, ide):
     clear_discourse()
