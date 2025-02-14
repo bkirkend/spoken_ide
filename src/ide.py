@@ -146,7 +146,25 @@ class PreviewWindow(QPlainTextEdit):
             self.setTextCursor(cursor)  
             self.ensureCursorVisible()  
             self.setFocus()  
-            self.viewport().update()  
+            self.viewport().update()
+
+    def select_all_left(self):
+        cursor = self.textCursor()  
+        cursor.movePosition(QTextCursor.StartOfBlock, QTextCursor.KeepAnchor)
+        if not cursor.isNull():
+            self.setTextCursor(cursor)  
+            self.ensureCursorVisible()  
+            self.setFocus()  
+            self.viewport().update() 
+
+    def select_all_right(self):
+        cursor = self.textCursor()  
+        cursor.movePosition(QTextCursor.EndOfBlock, QTextCursor.KeepAnchor)
+        if not cursor.isNull():
+            self.setTextCursor(cursor)  
+            self.ensureCursorVisible()  
+            self.setFocus()  
+            self.viewport().update()   
 
     def update_cursor_position(self, position=None): 
         if position is None:

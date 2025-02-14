@@ -36,19 +36,11 @@ def handle_left(msg, ide):
 
 def handle_right(msg, ide):
     ide.preview_window.setFocus() 
-    ide.preview_window.move_cursor("up")
+    ide.preview_window.move_cursor("right")
 
 def handle_down(msg, ide):
     ide.preview_window.setFocus()
     ide.preview_window.move_cursor("down")
-
-def handle_left(msg, ide):
-    ide.preview_window.setFocus()
-    ide.preview_window.move_cursor("left")
-
-def handle_right(msg, ide):
-    ide.preview_window.setFocus()
-    ide.preview_window.move_cursor("right")
 
 def select_left(msg, ide):
     ide.preview_window.setFocus()
@@ -57,6 +49,14 @@ def select_left(msg, ide):
 def select_right(msg, ide):
     ide.preview_window.setFocus()
     ide.preview_window.select_right()
+
+def select_all_left(msg, ide):
+    ide.preview_window.setFocus()
+    ide.preview_window.select_all_left()
+
+def select_all_right(msg, ide):
+    ide.preview_window.setFocus()
+    ide.preview_window.select_all_right()
 
 def handle_save(msg, ide):
     try:
@@ -120,7 +120,7 @@ command_handler = {
     "literal" : handle_literal,
     "line" : handle_line,
     "run" : handle_run,
-    "clear history" : handle_clear_history,
+    "clear" : handle_clear_history,
     "up" :  handle_up,
     "down" :  handle_down,
     "right" :  handle_right,
@@ -131,6 +131,8 @@ command_handler = {
     "submit" : handle_confirm,
     "get" : select_left,
     "grab" : select_right, 
+    "getting" : select_all_left, 
+    "grabbing" : select_all_right, 
 }
 
 # def __main__():
