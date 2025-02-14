@@ -22,7 +22,6 @@ def handle_clear_history(msg, ide):
     clear_discourse()
 
 def handle_up(msg, ide):
-<<<<<<< HEAD
     print("Moving cursor up") 
     ide.preview_window.setFocus()  
     ide.preview_window.move_cursor("up")
@@ -37,9 +36,6 @@ def handle_left(msg, ide):
 
 def handle_right(msg, ide):
     ide.preview_window.setFocus() 
-=======
-    print("Moving cursor up")
-    ide.preview_window.setFocus()
     ide.preview_window.move_cursor("up")
 
 def handle_down(msg, ide):
@@ -52,7 +48,6 @@ def handle_left(msg, ide):
 
 def handle_right(msg, ide):
     ide.preview_window.setFocus()
->>>>>>> 70ce4af8e78b4e6d47953d7f5f89f7b8cd7f667d
     ide.preview_window.move_cursor("right")
 
 def select_left(msg, ide):
@@ -111,11 +106,7 @@ def handle_revise(msg, ide):
 
 def handle_call(msg, ide):
     curr_code_block = ide.preview_window.toPlainText()
-<<<<<<< HEAD
-    msg = f"Append to this codeblock calls to the created function with testcases for the following input (or inputs): {msg}. Previous block: {curr_code_block}"
-=======
     msg = f"Append to this codeblock calls to the created function with a testcase in a print call for the following string input: {msg}. Do not place this in a __main__ block. Append a new test do not override existing testcases. Previous block: {curr_code_block}"
->>>>>>> 70ce4af8e78b4e6d47953d7f5f89f7b8cd7f667d
     output = gpt(msg)
     ide.preview_signal.emit(output)
 
@@ -140,14 +131,11 @@ command_handler = {
     "left select" : select_left,
     "right select" : select_right, 
 }
-<<<<<<< HEAD
 
-def __main__():
-    msg = "determine if a number is prime"
-    output = command_handler["prompt"](msg)
+# def __main__():
+#     msg = "determine if a number is prime"
+#     output = command_handler["prompt"](msg)
+#
+# if __name__ == "__main__":
+#     __main__()
 
-if __name__ == "__main__":
-    __main__()
-
-=======
->>>>>>> 70ce4af8e78b4e6d47953d7f5f89f7b8cd7f667d
