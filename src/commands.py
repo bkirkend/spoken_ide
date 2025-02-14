@@ -13,11 +13,6 @@ def handle_literal(msg, ide):
     print(f"Literal Text: {msg}", flush=True)
     ide.preview_signal.emit(ide.preview_window.toPlainText() + " " + msg + " ") 
 
-def handle_line(msg, ide):
-    suffix = f"only change the line specified leave everything else the same"
-    print(output := gpt(msg + suffix))
-    ide.preview_signal.emit(output)
-
 def handle_clear_history(msg, ide):
     clear_discourse()
 
@@ -107,6 +102,14 @@ def handle_revise(msg, ide):
 def handle_test(msg, ide):
     curr_code_block = ide.preview_window.toPlainText()
     msg = f"Append to this codeblock calls to the created function with a testcase in a print call for the following string input: {msg}. Do not place this in a __main__ block. Append a new test do not override existing testcases. Previous block: {curr_code_block}"
+    output = gpt(msg)
+    ide.preview_signal.emit(output)
+
+def handle_line(msg, ide):
+    cursor_line = line() #gets cursor line number
+    cursor_line_text = text() #string of text at cursor line
+    codeblock = ide.preview_window.toPlainText()
+    gpt_msg = f"Edit {cursor_line_text} found on {cursor_line} from this codeblock: {codeblock}. Change it by {msg}."
     output = gpt(msg)
     ide.preview_signal.emit(output)
 
