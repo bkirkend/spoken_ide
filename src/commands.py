@@ -4,8 +4,8 @@ from PyQt5.QtGui import QTextCursor
 import os
 
 def handle_prompt(msg, ide):
-    print("in prompt handler")
-    output = gpt(msg)
+    gpt_msg = f"Create a function for {msg}, return only the function and no auxiliary calls or tescases"
+    output = gpt(gpt_msg)
     ide.preview_signal.emit(output)
 
 def handle_literal(msg, ide):
