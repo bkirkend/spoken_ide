@@ -171,7 +171,6 @@ class PreviewWindow(QPlainTextEdit):
             self.cursor_position.movePosition(QTextCursor.End)
         else:
             self.cursor_position.setPosition(position)
-        
         self.setTextCursor(self.cursor_position)  
         self.ensureCursorVisible()  
         self.viewport().update()  
